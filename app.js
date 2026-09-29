@@ -5,7 +5,7 @@ const WORKER_URL=localStorage.getItem('dixit_worker_url')||'http://localhost:878
 function parseCard(id){let m=id.match(/^(DIXIT_\d+)_(\d{3})$/);return m?{deck:m[1],num:m[2]}:null}
 function img(id){let c=parseCard(id);return c?`cards/${c.deck}/${id}.webp`:''}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
-function top(){return `<div class=top><div class=brand>DIXIT ONLINE</div><div>v0.2.1</div></div>`}
+function top(){return `<div class=top><div class=brand>DIXIT ONLINE</div><div>v0.2.2</div></div>`}
 function home(){app.innerHTML=top()+`<div class=wrap><div class=panel><h2>プレイヤー名</h2><div class=row><input id=name class=grow value="${esc(me)}" placeholder="名前"><button class=btn id=save>保存</button></div></div><div class=panel><h2>ROOM</h2><div class=rooms>${[1,2,3,4].map(n=>`<div class=room data-r="${n}">ROOM ${n}</div>`).join('')}</div></div><div class=panel><small>接続先: ${esc(WORKER_URL)}</small></div></div>`;$('#save').onclick=save;document.querySelectorAll('.room').forEach(x=>x.onclick=()=>join(x.dataset.r))}
 function save(){me=$('#name').value.trim();if(!me)return alert('名前を入力してください');localStorage.setItem('boardgame_player_name',me)}
 function join(r){save();if(!me)return;room=r;ws=new WebSocket(WORKER_URL.replace(/^http/,'ws')+`/room/${r}?name=${encodeURIComponent(me)}`);ws.onmessage=e=>{let m=JSON.parse(e.data);if(m.type==='state'){state=m.state;render()}else if(m.type==='error')alert(m.message)};ws.onclose=()=>setTimeout(()=>{if(room)join(room)},1500)}
@@ -17,7 +17,45 @@ function hand(p,select){return `<div class=panel><h3>手札</h3><div class=cards
 function board(p){return `<div class=panel><div class=cards>${state.board.map((c,i)=>`<div class="card voteCard" data-i="${i}"><span class=num>${i+1}</span><img loading="lazy" src="${img(c.id)}"></div>`).join('')}</div><p>選択票: <b id=voteCount>${p.votes?.length||0}/${state.settings.votes}</b></p><button class=btn id=voteSubmit disabled>投票確定</button></div>`}
 function result(){return `<div class=panel><h2>答え合わせ</h2><div class=cards>${state.board.map((c,i)=>`<div class=card><span class=num>${i+1} ${c.owner===state.storyteller?'★正解':''}</span><img loading="lazy" src="${img(c.id)}"><div style="padding:7px">${esc(c.owner)} / ${c.voteNames.map(esc).join(', ')||'0票'}</div></div>`).join('')}</div><h3>今回の得点</h3>${state.players.map(x=>`<p>${esc(x.name)} +${x.roundGain||0}（計${x.score}）</p>`).join('')}${state.finished?'<h2>ゲーム終了</h2>':`<button class=btn id=next ${state.host===me?'':'disabled'}>次のラウンド</button>`}</div>`}
 function phaseText(){let t={story:`${state.storyteller}がお題を決めています`,submit:'お題に合うカードを提出してください',vote:'語り部のカードに投票してください',result:'ラウンド結果'};return `ラウンド ${state.round}　${t[state.phase]||''}`}
-function bind(host,p){if(state.phase==='lobby'&&host){const update=()=>send('settings',{settings:{votes:+$('#votes').value,endType:$('#endType').value,target:+$('#target').value,decks:[...document.querySelectorAll('.deckBox:checked')].map(x=>x.value)}});['votes','endType','target'].forEach(id=>$('#'+id).onchange=update);document.querySelectorAll('.deckBox').forEach(x=>x.onchange=update);$('#start').onclick=()=>send('start')}
-let sel=null;if(['story','submit'].includes(state.phase)){document.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>{document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));c.classList.add('selected');sel=c.dataset.id;let b=$('#submitCard');if(b)b.disabled=false});if($('#submitCard'))$('#submitCard').onclick=()=>send('submit',{cardId:sel});if($('#storySubmit'))$('#storySubmit').onclick=()=>{if(!sel||!$('#clue').value.trim())return alert('カードとお題を選択してください');send('story',{cardId:sel,clue:$('#clue').value.trim()})}}
-if(state.phase==='vote'&&state.storyteller!==me){let chosen=[];document.querySelectorAll('.voteCard').forEach(c=>c.onclick=()=>{let i=+c.dataset.i;if(state.board[i].owner===me)return alert('自分のカードには投票できません');if(chosen.length>=state.settings.votes)chosen.shift();chosen.push(i);document.querySelectorAll('.voteCard').forEach(x=>x.classList.remove('selected'));[...new Set(chosen)].forEach(j=>document.querySelector(`.voteCard[data-i="${j}"]`)?.classList.add('selected'));p.votes=chosen;$('#voteCount').textContent=`${chosen.length}/${state.settings.votes}`;$('#voteSubmit').disabled=chosen.length!==state.settings.votes});$('#voteSubmit').onclick=()=>send('vote',{votes:chosen})}if($('#next'))$('#next').onclick=()=>send('next')}
+function bind(host,p){
+  if(state.phase==='lobby'&&host){
+    const update=()=>send('settings',{settings:{votes:+$('#votes').value,endType:$('#endType').value,target:+$('#target').value,decks:[...document.querySelectorAll('.deckBox:checked')].map(x=>x.value)}});
+    ['votes','endType','target'].forEach(id=>$('#'+id).onchange=update);
+    document.querySelectorAll('.deckBox').forEach(x=>x.onchange=update);
+    if($('#start')) $('#start').onclick=()=>send('start');
+  }
+
+  let sel=null;
+  if(['story','submit'].includes(state.phase)){
+    document.querySelectorAll('.card[data-id]').forEach(c=>c.onclick=()=>{
+      document.querySelectorAll('.card').forEach(x=>x.classList.remove('selected'));
+      c.classList.add('selected');
+      sel=c.dataset.id;
+      let b=$('#submitCard');
+      if(b)b.disabled=false;
+    });
+    if($('#submitCard')) $('#submitCard').onclick=()=>send('submit',{cardId:sel});
+    if($('#storySubmit')) $('#storySubmit').onclick=()=>{
+      if(!sel||!$('#clue').value.trim()) return alert('カードとお題を選択してください');
+      send('story',{cardId:sel,clue:$('#clue').value.trim()});
+    };
+  }
+
+  if(state.phase==='vote'&&state.storyteller!==me){
+    let chosen=[];
+    document.querySelectorAll('.voteCard').forEach(c=>c.onclick=()=>{
+      let i=+c.dataset.i;
+      if(state.board[i].owner===me) return alert('自分のカードには投票できません');
+      if(chosen.length>=state.settings.votes) chosen.shift();
+      chosen.push(i);
+      document.querySelectorAll('.voteCard').forEach(x=>x.classList.remove('selected'));
+      [...new Set(chosen)].forEach(j=>document.querySelector(`.voteCard[data-i="${j}"]`)?.classList.add('selected'));
+      p.votes=chosen;
+      $('#voteCount').textContent=`${chosen.length}/${state.settings.votes}`;
+      $('#voteSubmit').disabled=chosen.length!==state.settings.votes;
+    });
+    $('#voteSubmit').onclick=()=>send('vote',{votes:chosen});
+  }
+  if($('#next')) $('#next').onclick=()=>send('next');
+}
 home();
