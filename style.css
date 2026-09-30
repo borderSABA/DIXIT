@@ -63,3 +63,51 @@
     width:100%;
   }
 }
+
+
+/* v0.4.3.3: desktop coordinates are completely independent.
+   playerSidebar = viewport left; gameBoard = viewport center. */
+@media (min-width:721px){
+  body:has(.gameBoard){overflow:hidden}
+  .playerSidebar{
+    position:fixed;
+    left:16px;
+    top:68px;
+    width:205px;
+    height:calc(100vh - 78px);
+    z-index:4;
+    overflow:visible;
+  }
+  .playerSidebar .playerStrip{height:100%;display:flex;flex-direction:column;justify-content:flex-start;gap:min(6px,.6vh);margin:0}
+  .playerSidebar .playerSlot{height:min(48px,calc((100vh - 132px)/10));min-height:38px;display:flex;align-items:center;position:relative;overflow:visible;text-align:left}
+  .playerSidebar .playerBox{width:145px;flex:0 0 145px;height:100%;min-height:0;padding:4px 8px;display:flex;flex-direction:column;justify-content:center;text-align:left}
+  .playerSidebar .playerName{font-size:12px;line-height:1.15}
+  .playerSidebar .playerScore{font-size:15px;line-height:1.15;margin-top:2px}
+  .playerSidebar .roundGain{position:absolute;left:151px;top:50%;transform:translateY(-50%);margin:0;min-width:54px;z-index:5}
+  .gameBoard{
+    width:min(1100px,calc(100vw - 36px));
+    max-width:1100px;
+    height:calc(100vh - 58px);
+    margin-left:auto;
+    margin-right:auto;
+    padding:10px 18px 8px;
+    overflow:hidden;
+  }
+  .gameBoard .panel{padding:10px;margin-bottom:8px}
+  .gameBoard .status{margin:6px;font-size:18px}
+  .gameBoard .cards{grid-template-columns:repeat(6,minmax(0,1fr));gap:7px}
+  .gameBoard .card{max-height:calc(100vh - 235px)}
+  .gameBoard .card img{max-height:calc((100vh - 245px) * .72);object-fit:contain}
+  .gameBoard h2,.gameBoard h3{margin:5px 0}
+  .gameBoard p{margin:5px 0}
+  .gameBoard .resultPanel{height:calc(100vh - 86px);margin-bottom:0}
+  .gameBoard .resultCards{flex:1;min-height:0}
+  .gameBoard .resultCardWrap .card img{max-height:calc(100vh - 220px)}
+}
+@media(max-width:720px){
+  .playerSidebar{position:static;width:auto;height:auto;margin:10px}
+  .playerSidebar .playerStrip{display:grid;grid-template-columns:repeat(2,1fr)}
+  .gameBoard{height:auto;overflow:visible;padding:10px}
+  .gameBoard .card img{max-height:none}
+  .gameBoard .resultPanel{height:auto}
+}
