@@ -8,3 +8,19 @@
 /* v0.4.2: compact result presentation */
 .playerSlot{min-width:0;text-align:center}.roundGain{height:24px;line-height:24px;font-size:17px;font-weight:900;color:#f3dc72;text-shadow:0 1px 2px #000;margin-bottom:2px}.resultPanel{display:flex;flex-direction:column;min-height:0}.resultCards{align-items:start}.resultCardWrap{min-width:0;text-align:center}.resultCardWrap .card{cursor:default}.submitter,.voters{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;font-weight:700;padding:3px 2px}.submitter{min-height:24px}.voters{min-height:24px}.resultActions{display:flex;justify-content:center;align-items:center;padding-top:6px}.finishedText{font-size:20px}.gameWrap .resultPanel{height:calc(100vh - 190px);margin-bottom:0}.gameWrap .resultCards{flex:1;min-height:0}.gameWrap .resultCardWrap .card img{max-height:calc(100vh - 300px)}
 @media(max-width:720px){.roundGain{font-size:15px}.gameWrap .resultPanel{height:auto}.gameWrap .resultCardWrap .card img{max-height:none}.submitter,.voters{white-space:normal}}
+
+/* v0.4.3: left player rail / wrapped voters / final result */
+@media (min-width:721px){
+  .gameWrap{display:grid;grid-template-columns:180px minmax(0,1fr);gap:10px;max-width:1600px}
+  .playerRail{min-width:0;overflow:visible}
+  .gameMain{min-width:0;min-height:0;overflow:hidden}
+  .playerStrip{display:flex;flex-direction:column;gap:6px;margin:0}
+  .playerSlot{display:flex;align-items:center;position:relative;text-align:left;min-width:0}
+  .playerBox{width:145px;flex:0 0 145px;text-align:left;padding:7px 8px}
+  .roundGain{height:auto;line-height:1;min-width:58px;margin:0 0 0 7px;white-space:nowrap;font-size:18px}
+  .gameMain .resultPanel{height:calc(100vh - 86px)}
+  .gameMain .resultCardWrap .card img{max-height:calc(100vh - 220px)}
+}
+.resultCardWrap .submitter,.resultCardWrap .voters{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;height:auto;min-height:24px}
+.finalPanel{max-width:720px;margin:30px auto;text-align:center}.finalPanel h2{font-size:28px}.finalList{display:grid;gap:8px;margin:18px 0}.finalRow{display:grid;grid-template-columns:70px 1fr 90px;align-items:center;background:#302640;border:1px solid #493a5d;border-radius:12px;padding:12px 16px;text-align:left}.finalRow strong{text-align:right;font-size:20px}
+@media(max-width:720px){.playerRail{width:auto}.playerStrip{display:grid;grid-template-columns:repeat(2,1fr)}.playerSlot{display:flex;align-items:center}.roundGain{margin-left:5px}.finalPanel{margin:10px 0}}
