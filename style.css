@@ -71,3 +71,32 @@
   .gameBoard .card img{max-height:none}
   .gameBoard .resultPanel{height:auto}
 }
+
+/* v0.4.3.4: lobby/player rail alignment + collision-safe centered board */
+@media (min-width:721px){
+  :root{--dixit-rail-left:16px;--dixit-rail-width:205px;--dixit-gap:14px;--dixit-content-top:68px;--dixit-edge:18px}
+  body:has(.gameBoard){overflow:hidden}
+  .desktopRoomShell{width:100%;min-height:calc(100vh - 58px)}
+  .playerSidebar{left:var(--dixit-rail-left);top:var(--dixit-content-top);width:var(--dixit-rail-width);height:calc(100vh - var(--dixit-content-top) - 10px)}
+  .gameBoard{
+    box-sizing:border-box;
+    position:relative;
+    top:10px;
+    width:min(1100px,calc(100vw - 2 * (var(--dixit-rail-left) + var(--dixit-rail-width) + var(--dixit-gap))));
+    max-width:1100px;
+    min-width:0;
+    margin-left:auto;
+    margin-right:auto;
+    padding-top:0;
+  }
+  .lobbyBoard{height:calc(100vh - 68px);overflow:auto;padding-left:18px;padding-right:18px;padding-bottom:8px}
+}
+@media (max-width:1180px) and (min-width:721px){
+  .gameBoard{width:calc(100vw - 2 * (var(--dixit-rail-left) + var(--dixit-rail-width) + var(--dixit-gap)));padding-left:8px;padding-right:8px}
+  .gameBoard .cards{gap:5px}
+  .gameBoard .panel{padding:8px}
+}
+@media(max-width:720px){
+  .desktopRoomShell{display:block}
+  .lobbyBoard{height:auto;overflow:visible}
+}
