@@ -37,3 +37,29 @@
   .gameWrap .roundGain{position:absolute;left:151px;top:50%;transform:translateY(-50%);margin:0;min-width:54px;z-index:5}
   .gameWrap .gameMain{width:100%;min-width:0;min-height:0;overflow:hidden}
 }
+
+/* v0.4.3.2: desktop game board uses the full viewport width */
+@media (min-width:721px){
+  body:has(.gameWrap) .wrap.gameWrap{
+    width:100vw;
+    max-width:none;
+    margin:0;
+    padding:10px 12px 8px 232px;
+  }
+  .gameWrap .playerRail{
+    left:12px;
+    width:208px;
+  }
+  .gameWrap .gameMain{
+    width:100%;
+    max-width:none;
+    margin:0;
+  }
+  .gameWrap .panel{
+    width:100%;
+    max-width:none;
+  }
+  .gameWrap .cards{
+    width:100%;
+  }
+}

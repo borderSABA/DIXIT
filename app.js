@@ -7,7 +7,7 @@ function parseCard(id){let m=id.match(/^(DIXIT_\d+)_(\d{3})$/);return m?{deck:m[
 function img(id){let c=parseCard(id);return c?`cards/${c.deck}/${id}.webp`:''}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function progressLabel(){if(!state)return '';let s=state.settings||roomState?.settings||{};return s.endType==='round'?`${state.round}/${s.target}`:`${s.target}点で勝ち`}
-function renderTopBar(inRoom=false,host=false){return `<div class=top><div class=brand>DIXIT ONLINE</div>${inRoom?`<div class=topProgress>${esc(progressLabel())}</div><div class=topActions>${host&&state?'<button class="btn secondary compact" id=resetLobby>ロビーへ戻る</button>':''}<button class="btn secondary compact" id=leave>退出</button><span>v0.4.3.1</span></div>`:`<div class=topActions><span>v0.4.3.1</span></div>`}</div>`}
+function renderTopBar(inRoom=false,host=false){return `<div class=top><div class=brand>DIXIT ONLINE</div>${inRoom?`<div class=topProgress>${esc(progressLabel())}</div><div class=topActions>${host&&state?'<button class="btn secondary compact" id=resetLobby>ロビーへ戻る</button>':''}<button class="btn secondary compact" id=leave>退出</button><span>v0.4.3.2</span></div>`:`<div class=topActions><span>v0.4.3.2</span></div>`}</div>`}
 async function fetchRooms(){let r=await fetch(`${WORKER_URL}/rooms`,{cache:'no-store'});let d=await r.json();if(!r.ok)throw Error(d.error||'ROOM情報を取得できません');return d.rooms||[]}
 function tokenKey(id){return `dixit-online-token-${id}`}
 function getToken(id){let t=localStorage.getItem(tokenKey(id));if(!t){t=crypto.randomUUID().replaceAll('-','');localStorage.setItem(tokenKey(id),t)}return t}
