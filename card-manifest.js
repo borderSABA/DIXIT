@@ -1,5 +1,5 @@
 window.DIXIT_DECKS = {
-  DIXIT_1: 20,
+  DIXIT_1: 84,
   DIXIT_2: 0,
   DIXIT_3: 0,
   DIXIT_4: 0,
