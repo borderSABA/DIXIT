@@ -24,3 +24,16 @@
 .resultCardWrap .submitter,.resultCardWrap .voters{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere;word-break:break-word;line-height:1.25;height:auto;min-height:24px}
 .finalPanel{max-width:720px;margin:30px auto;text-align:center}.finalPanel h2{font-size:28px}.finalList{display:grid;gap:8px;margin:18px 0}.finalRow{display:grid;grid-template-columns:70px 1fr 90px;align-items:center;background:#302640;border:1px solid #493a5d;border-radius:12px;padding:12px 16px;text-align:left}.finalRow strong{text-align:right;font-size:20px}
 @media(max-width:720px){.playerRail{width:auto}.playerStrip{display:grid;grid-template-columns:repeat(2,1fr)}.playerSlot{display:flex;align-items:center}.roundGain{margin-left:5px}.finalPanel{margin:10px 0}}
+
+/* v0.4.3.1: desktop player rail is viewport-fixed at far left */
+@media (min-width:721px){
+  .gameWrap{display:block;max-width:1100px;margin:0 auto;padding-left:18px;padding-right:18px;position:relative}
+  .gameWrap .playerRail{position:fixed;left:16px;top:68px;width:205px;height:calc(100vh - 78px);z-index:4;overflow:visible;pointer-events:auto}
+  .gameWrap .playerStrip{height:100%;display:flex;flex-direction:column;justify-content:flex-start;gap:min(6px,0.6vh);margin:0}
+  .gameWrap .playerSlot{height:min(48px,calc((100vh - 132px)/10));min-height:38px;display:flex;align-items:center;position:relative;overflow:visible}
+  .gameWrap .playerBox{width:145px;flex:0 0 145px;height:100%;min-height:0;padding:4px 8px;display:flex;flex-direction:column;justify-content:center;text-align:left}
+  .gameWrap .playerName{font-size:12px;line-height:1.15}
+  .gameWrap .playerScore{font-size:15px;line-height:1.15;margin-top:2px}
+  .gameWrap .roundGain{position:absolute;left:151px;top:50%;transform:translateY(-50%);margin:0;min-width:54px;z-index:5}
+  .gameWrap .gameMain{width:100%;min-width:0;min-height:0;overflow:hidden}
+}
