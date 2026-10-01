@@ -8,7 +8,7 @@ function parseCard(id){let m=id.match(/^(DIXIT_\d+)_(\d{3})$/);return m?{deck:m[
 function img(id){let c=parseCard(id);return c?`cards/${c.deck}/${id}.webp`:''}
 function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function progressLabel(){if(!state)return '';let s=state.settings||roomState?.settings||{};return s.endType==='round'?`${state.round}/${s.target}`:`${s.target}点で勝ち`}
-function renderTopBar(inRoom=false,host=false){return `<div class=top><div class=brand>DIXIT ONLINE</div>${inRoom?`<div class=topProgress>${esc(progressLabel())}</div><div class=topActions>${host&&state?'<button class="btn secondary compact" id=resetLobby>ロビーへ戻る</button>':''}<button class="btn secondary compact" id=leave>退出</button><span class=versionLabel>v0.4.3.8</span></div>`:`<div class=topActions><span class=versionLabel>v0.4.3.8</span></div>`}</div>`}
+function renderTopBar(inRoom=false,host=false){return `<div class=top><div class=brand>DIXIT ONLINE</div>${inRoom?`<div class=topProgress>${esc(progressLabel())}</div><div class=topActions>${host&&state?'<button class="btn secondary compact" id=resetLobby>ロビーへ戻る</button>':''}<button class="btn secondary compact" id=leave>退出</button><span class=versionLabel>v0.4.3.9</span></div>`:`<div class=topActions><span class=versionLabel>v0.4.3.9</span></div>`}</div>`}
 async function fetchRooms(){let r=await fetch(`${WORKER_URL}/rooms`,{cache:'no-store'});let d=await r.json();if(!r.ok)throw Error(d.error||'ROOM情報を取得できません');return d.rooms||[]}
 function tokenKey(id){return `dixit-online-token-${id}`}
 function getToken(id){let t=localStorage.getItem(tokenKey(id));if(!t){t=crypto.randomUUID().replaceAll('-','');localStorage.setItem(tokenKey(id),t)}return t}
@@ -26,8 +26,19 @@ function lobby(host){let s=roomState.settings||{votes:1,endType:'round',target:5
 function game(p){let h=`<div class=status>${phaseText()}</div>`;if(state.phase==='story'){if(state.storyteller===me)h+=hand(p,true)+`<div class=panel><input id=clue placeholder="お題を入力"><button class=btn id=storySubmit>お題とカードを決定</button></div>`}else if(state.phase==='submit'){h+=`<div class=panel><b>お題：</b>${esc(state.clue)}</div>`;if(state.storyteller!==me&&!p.submitted)h+=hand(p,true)}else if(state.phase==='vote'){h+=`<div class=panel><b>お題：</b>${esc(state.clue)}</div>`+board(p)}else if(state.phase==='result')h+=result();else if(state.phase==='final')h+=finalResult();return h}
 function hand(p,select){return `<div class=panel><h3>手札</h3><div class=cards>${p.hand.map(id=>`<div class=card data-id="${id}"><img loading="lazy" src="${img(id)}"></div>`).join('')}</div>${select?'<button class=btn id=submitCard disabled>このカードを出す</button>':''}</div>`}
 function board(p){return `<div class=panel><div class=cards>${state.board.map((c,i)=>`<div class="card voteCard" data-i="${i}"><img loading="lazy" src="${img(c.id)}"></div>`).join('')}</div><p>選択票: <b id=voteCount>${p.votes?.length||0}/${state.settings.votes}</b></p><button class=btn id=voteSubmit disabled>投票確定</button></div>`}
-function result(){return `<div class="panel resultPanel"><div class="cards resultCards">${state.board.map(c=>`<div class=resultCardWrap><div class=submitter>提出者：${esc(c.owner)}${c.owner===state.storyteller?' ★語り部':''}</div><div class=card><img loading="lazy" src="${img(c.id)}"></div><div class=voters>投票者：${c.voteNames.length?c.voteNames.map(esc).join('、'):'なし'}</div></div>`).join('')}</div><div class=resultActions>${state.finished?`<button class=btn id=finalResult ${roomState.isHost?'':'disabled'}>最終リザルトへ</button>`:`<button class="btn mobileNext" id=next ${roomState.isHost?'':'disabled'}>次のラウンドへ</button>`}</div></div>`}
-function finalResult(){let sorted=[...state.players].sort((a,b)=>b.score-a.score);let last=null,rank=0;let rows=sorted.map((p,i)=>{if(p.score!==last){rank=i+1;last=p.score}return `<div class=finalRow><b>${rank}位</b><span>${esc(p.name)}${p.isCpu?' 🤖':''}</span><strong>${p.score}点</strong></div>`}).join('');return `<div class="panel finalPanel"><h2>最終リザルト</h2><div class=finalList>${rows}</div>${roomState.isHost?'<button class=btn id=backLobby>ロビーに戻る</button>':'<p>ホストがロビーへ戻るまでお待ちください。</p>'}</div>`}
+function result(){return `<div class="panel resultPanel"><div class=resultClue><b>お題：</b>${esc(state.clue||'')}</div><div class="cards resultCards">${state.board.map(c=>`<div class=resultCardWrap><div class=submitter>提出者：${esc(c.owner)}${c.owner===state.storyteller?' ★語り部':''}</div><div class=card><img loading="lazy" src="${img(c.id)}"></div><div class=voters>投票者：${c.voteNames.length?c.voteNames.map(esc).join('、'):'なし'}</div></div>`).join('')}</div><div class=resultActions>${state.finished?`<button class=btn id=finalResult ${roomState.isHost?'':'disabled'}>最終リザルトへ</button>`:`<button class="btn mobileNext" id=next ${roomState.isHost?'':'disabled'}>次のラウンドへ</button>`}</div></div>`}
+function finalResult(){
+  let sorted=[...state.players].sort((a,b)=>b.score-a.score),last=null,rank=0;
+  let rows=sorted.map((p,i)=>{if(p.score!==last){rank=i+1;last=p.score}return `<button type=button class=finalRow data-history-player="${esc(p.name)}"><b>${rank}位</b><span>${esc(p.name)}${p.isCpu?' 🤖':''}</span><strong>${p.score}点</strong></button>`}).join('');
+  return `<div class="panel finalPanel"><h2>最終リザルト</h2><p class=historyHint>プレイヤーをクリックすると、その人が語り部だったラウンドを確認できます。</p><div class=finalList>${rows}</div><div id=storyHistory class=storyHistory></div>${roomState.isHost?'<button class=btn id=backLobby>ロビーに戻る</button>':'<p>ホストがロビーへ戻るまでお待ちください。</p>'}</div>`
+}
+function showStoryHistory(name){
+  let hs=(state.history||[]).filter(h=>h.storyteller===name);
+  document.querySelectorAll('.finalRow').forEach(x=>x.classList.toggle('active',x.dataset.historyPlayer===name));
+  let box=$('#storyHistory');if(!box)return;
+  if(!hs.length){box.innerHTML=`<h3>${esc(name)}の語り部履歴</h3><p>語り部だったラウンドはありません。</p>`;return}
+  box.innerHTML=`<h3>${esc(name)}の語り部履歴</h3><div class=historyGrid>${hs.map(h=>`<div class=historyItem><div class=historyRound>ラウンド ${h.round}</div><div class=historyClue><b>お題：</b>${esc(h.clue||'')}</div>${h.cardId?`<div class="card historyCard"><img loading="lazy" src="${img(h.cardId)}"></div>`:''}<div class=historyVoters><b>正解カードへの投票者：</b>${h.voters?.length?h.voters.map(esc).join('、'):'なし'}</div><div class=historyGain>語り部獲得：+${h.gain||0}点</div></div>`).join('')}</div>`
+}
 function phaseText(){let t={story:`${state.storyteller}がお題を決めています`,submit:'お題に合うカードを提出してください',vote:'語り部のカードに投票してください',result:'ラウンド結果',final:'最終リザルト'};return `${t[state.phase]||''}`}
 function bind(host,p){
   if(!state){
@@ -114,6 +125,7 @@ function bind(host,p){
   if($('#nextDesktop')) $('#nextDesktop').onclick=()=>send('next');
   if($('#finalResultDesktop')) $('#finalResultDesktop').onclick=()=>send('final_result');
   if($('#finalResult')) $('#finalResult').onclick=()=>send('final_result');
+  document.querySelectorAll('.finalRow[data-history-player]').forEach(x=>x.onclick=()=>showStoryHistory(x.dataset.historyPlayer));
   if($('#backLobby')) $('#backLobby').onclick=()=>send('reset_room');
 }
 home();
