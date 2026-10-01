@@ -1,4 +1,4 @@
-/* DIXIT ONLINE v0.4.3.6 */
+/* DIXIT ONLINE v0.4.3.7 */
 *{box-sizing:border-box}body{margin:0;background:#17131f;color:#f7f2ff;font-family:system-ui,sans-serif}button,input,select{font:inherit}.top{height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 16px;background:#241b31;position:sticky;top:0;z-index:5}.brand{font-weight:800;font-size:22px}.wrap{max-width:1100px;margin:auto;padding:18px}.panel{background:#241b31;border:1px solid #493a5d;border-radius:16px;padding:16px;margin-bottom:14px}.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.grow{flex:1}.btn{border:0;border-radius:11px;padding:11px 16px;background:#6d50a3;color:white;font-weight:700;cursor:pointer}.btn.secondary{background:#3b304a}.btn:disabled{opacity:.4}.rooms{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.room{padding:16px;background:#302640;border-radius:14px;text-align:center;cursor:pointer}.settings{display:grid;grid-template-columns:1fr 1fr;gap:12px}.settings label{display:flex;flex-direction:column;gap:6px}.settings input,.settings select,#clue{padding:10px;border-radius:9px;border:1px solid #655378;background:#17131f;color:white}.players{display:flex;gap:8px;flex-wrap:wrap}.pill{background:#3b304a;padding:8px 11px;border-radius:999px}.cards{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.card{border:3px solid transparent;border-radius:13px;overflow:hidden;background:#111;cursor:pointer;position:relative}.card.selected{border-color:#e8cf67}.card img{display:block;width:100%;aspect-ratio:2/3;object-fit:cover}.card .num{position:absolute;left:6px;top:6px;background:#000b;padding:3px 7px;border-radius:8px}.score{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px}.status{text-align:center;font-size:20px;font-weight:700;margin:12px}.hidden{display:none}@media(max-width:720px){.rooms{grid-template-columns:1fr 1fr}.settings{grid-template-columns:1fr}.cards{grid-template-columns:repeat(2,1fr)}.top{height:52px}.wrap{padding:10px}.card img{aspect-ratio:2/3}}.deckGrid{display:grid;grid-template-columns:repeat(5,minmax(110px,1fr));gap:8px;margin:10px 0 14px}.deckChoice{padding:10px;border:1px solid #666;border-radius:10px}.disabledDeck{opacity:.45}@media(max-width:700px){.deckGrid{grid-template-columns:repeat(2,1fr)}}
 .roomCard{display:grid;gap:9px;margin:0}.roomCard h2{margin:0}.roomCard .btn{width:100%}.onlineHome .rooms{align-items:stretch}.onlineHome input{width:100%;padding:12px;border-radius:10px;border:1px solid #655378;background:#17131f;color:#fff}@media(max-width:720px){.onlineHome .rooms{grid-template-columns:repeat(2,minmax(0,1fr))}.roomCard{padding:11px}.roomCard h2{font-size:17px}}
 /* v0.4.1: fixed game HUD / no-PC-scroll layout */
@@ -123,7 +123,7 @@
 }
 
 
-/* v0.4.3.6: mobile scroll policy + compact in-game HUD */
+/* v0.4.3.7: mobile scroll policy + compact in-game HUD */
 @media (max-width:720px){
   body.screen-playing{height:100dvh;overflow:hidden}
   body.screen-playing #app{height:100dvh;overflow:hidden;display:flex;flex-direction:column}
@@ -158,4 +158,20 @@
   body.screen-result .top .versionLabel{display:none}
   body.screen-result .gameBoard{height:auto;overflow:visible}
   body.screen-result .playerSidebar{height:auto;overflow:visible}
+}
+
+/* v0.4.3.7: result action stays immediately below desktop player list */
+@media (min-width:721px){
+  .playerSidebar .playerStrip{
+    height:auto !important;
+    max-height:calc(100vh - var(--dixit-content-top) - 90px);
+    overflow:visible;
+    flex:none;
+  }
+  .desktopNextWrap{
+    display:block !important;
+    flex:0 0 auto;
+    width:100%;
+    margin-top:10px;
+  }
 }
